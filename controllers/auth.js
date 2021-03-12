@@ -5,14 +5,14 @@ module.exports = (req, res, next) => {
     let decodedToken;
     try {
         decodedToken = jwt.verify(token, "kwi9owl");
-        
+
     }
-    catch(err) {
+    catch (err) {
         err.statusCode = 500;
         return res.status(500).json({ message: err.message });
     }
     if (!decodedToken) {
-        return res.status(500).json({ message: "Authentication Failed!" });
+        return res.status(401).json({ message: "Authentication Failed!" });
     }
     req.playerId = decodedToken.playerId;
     next();
