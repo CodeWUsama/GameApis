@@ -25,5 +25,7 @@ router.post("/updatePlayerDetails", checkMantainence, isAuth, controllers.update
 router.get("/getActiveFriends?:id", checkMantainence, controllers.friendsData);
 router.get("/getSentRequests?:id", checkMantainence, controllers.getSentRequests);
 router.get("/getRecievedRequests?:id", checkMantainence, controllers.getRecievedRequests);
+router.post("/checkUsername", checkMantainence, controllers.checkUser);
+router.post("/checkBan", checkMantainence, controllers.checkBan);
 
 module.exports = router;

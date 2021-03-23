@@ -1,0 +1,34 @@
+const express = require('express');
+const router = express.Router();
+const controllers = require('./../controllers/admin');
+const isAuth = require("./../controllers/adminAuth");
+
+router.get("/", controllers.renderLogin);
+router.post("/login", controllers.login);
+router.get("/home", isAuth, controllers.renderHome);
+router.get("/giftcoins", isAuth, controllers.giftCoins);
+router.post("/giftcoins", isAuth, controllers.handleGiftCoins);
+router.get("/giftgems", isAuth, controllers.giftGems);
+router.post("/giftgems", isAuth, controllers.handleGiftGems);
+router.get("/giftcloth", isAuth, controllers.giftCloth);
+router.post("/giftcloth", isAuth, controllers.handleGiftCloth);
+router.get("/giftcharacter", isAuth, controllers.giftCharacter);
+router.post("/giftcharacter", isAuth, controllers.handleGiftCharacter);
+router.get("/giftpet", isAuth, controllers.giftPet);
+router.post("/giftpet", isAuth, controllers.handleGiftPet);
+router.get("/giftemote", isAuth, controllers.giftEmote);
+router.post("/giftemote", isAuth, controllers.handleGiftEmote);
+router.get("/giftpetemote", isAuth, controllers.giftPetEmote);
+router.post("/giftpetemote", isAuth, controllers.handleGiftPetEmote);
+router.get("/logout", isAuth, controllers.logout);
+router.get("/toggleMaintainance", isAuth, controllers.toogleMaintance);
+router.get("/viewFeedbacks", isAuth, controllers.viewFeedbacks);
+router.get("/leaderboard", isAuth, controllers.viewLeaderboard);
+router.post("/message", isAuth, controllers.postMessages);
+router.get("/message", isAuth, controllers.displayMessage);
+router.get("/ban", isAuth, controllers.ban);
+router.post("/ban", isAuth, controllers.postBan);
+router.get("/unban", isAuth, controllers.unban);
+router.post("/unban", isAuth, controllers.postUnban);
+
+module.exports = router;

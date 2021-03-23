@@ -1,0 +1,48 @@
+<html>
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <link
+      rel="stylesheet"
+      href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css"
+    />
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
+    <link rel="stylesheet" href="/css/style.css" />
+    <title>Admin Login</title>
+  </head>
+
+  <body>
+    <div class="rootCont">
+      <form class="myform" method="POST" action="/admin/login">
+        <h1 class="text-center">Admin Login</h1>
+        <div class="form-group">
+          <label for="exampleInputEmail1">Username</label>
+          <input
+            type="text"
+            class="form-control"
+            id="username"
+            name="username"
+            aria-describedby="emailHelp"
+            placeholder="Enter Username"
+          />
+        </div>
+        <div class="form-group">
+          <label for="exampleInputPassword1">Password</label>
+          <input
+            type="password"
+            class="form-control"
+            id="password"
+            name="password"
+            placeholder="Password"
+          />
+        </div>
+        <% if(data.error) { %>
+          <h4 class="text-center" style="color: red; margin: 20;"><%=data.error%></h4>
+          <%} %>
+        <div class="center">
+          <button type="submit" class="btn btn-primary" style="height: 60 !important;">Login</button>
+        </div>
+      </form>
+    </div>
+  </body>
+</html>

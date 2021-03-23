@@ -36,25 +36,24 @@ exports.addPlayer = (req, res) => {
     try {
         let playerId = req.body.playerId;
         let username = req.body.username;
-        let numberFlag = false;
         let lengthFlag = false;
+        let patternFlag = true;
 
         //Username Pattern Validation
-        if (username.length == 8) {
+        if (username.length >= 6 && username.length <= 12) {
             lengthFlag = true;
         }
 
         for (let i = 0; i < username.length; i++) {
-            if (username[i] >= '0' && username[i] <= "9") {
-                numberFlag = true;
+            if (!(username[i] >= '0' && username[i] <= "9" || username[i] >= 'a' && username[i] <= 'z' || username[i] >= 'A' && username[i] <= "Z")) {
+                patternFlag = false;
             }
         }
 
-        var patt = new RegExp("^[a-zA-Z0-9]*$");
-        var flag = patt.test(username);
-        if (flag & lengthFlag & numberFlag) {
 
-            let sql = "INSERT INTO player_details (playerid,username) VALUES ('" + playerId + "','" + username + "')";
+        if (patternFlag & lengthFlag) {
+
+            let sql = "INSERT INTO player_details (playerid,username, curcloth) VALUES ('" + playerId + "','" + username + "','" +"1,2,3,4,5,6,7,8"+"')";
 
             con.query(sql, (err, result) => {
                 if (err) {
@@ -65,7 +64,7 @@ exports.addPlayer = (req, res) => {
                     playerId: playerId
                 }, "kwi9owl");
 
-                let sql = "INSERT INTO owneditems (playerid) VALUES ('" + playerId + "')";
+                let sql = "INSERT INTO owneditems (playerid,cloths,characters) VALUES ('" + playerId + "','" + "1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16" + "','" + "1,2" + "' )";
                 con.query(sql, (err, result) => {
                     if (err) {
                         return res.status(500).json({ message: err.message });
@@ -94,13 +93,12 @@ exports.addPlayer = (req, res) => {
             });
         }
         else {
-            return res.status(500).json({ message: "Username should contain be of length 8 characters including number" });
+            return res.status(400).json({ message: "Username should contain be of length 6 to 12 and alphanumeric" });
         }
     }
     catch (err) {
         res.status(500).json({ message: err.message });
     }
-
 
 }
 
@@ -127,7 +125,7 @@ exports.sendRequest = (req, res) => {
                     fr_sent.map(fr => {
                         if (fr == toSend) {
                             flag1 = true;
-                            return res.status(200).json({ message: "Request Sent Already" });
+                            return res.status(409).json({ message: "Request Sent Already" });
                         }
                     });
                 }
@@ -140,7 +138,7 @@ exports.sendRequest = (req, res) => {
                     fr_recieved.map(fr => {
                         if (fr == toSend & flag1 == false) {
                             flag2 = true;
-                            return res.status(200).json({ message: "You already got the request of same person" });
+                            return res.status(409).json({ message: "You already got the request of same person" });
                         }
                     });
                 }
@@ -154,7 +152,7 @@ exports.sendRequest = (req, res) => {
                             db.query(sql, (err, result) => {
                                 if (err) return res.status(500).json({ message: err.message });
                                 if (result) {
-                                    return res.status(200).json({ message: "Request Sent Successfully" });
+                                    return res.status(409).json({ message: "Request Sent Successfully" });
                                 }
                             });
                         }
@@ -202,7 +200,7 @@ exports.acceptReq = (req, res) => {
                     if (err) {
                         return res.status(500).json({ message: err.message });
                     }
-
+                    console.log(result[0]);
                     let friendReqs = (result[0].fr_recieved).split(',');
 
                     if (friendReqs.length == 1) {
@@ -635,7 +633,7 @@ exports.getPlayerData = (req, res) => {
 
             }
             else {
-                res.status(500).json({ message: "user not found" });
+                res.status(404).json({ message: "Player not found" });
             }
         })
     }
@@ -658,7 +656,7 @@ exports.toggelmaintainance = (req, res) => {
             if (result) {
                 let data = result[0].status;
                 if (data == 1) {
-                    return res.status(408).json({ message: "System is under maintenance" });
+                    return res.status(503).json({ message: "System is under maintenance" });
                 }
                 else {
                     return res.status(200).json({ message: "System is working fine" });
@@ -702,6 +700,7 @@ exports.friendsData = async (req, res) => {
     try {
         const playerId = req.query.id;
         let dataToSend = [];
+        let newdata = "";
         let usernames = [];
 
         let sql = "Select * from friends where playerid='" + playerId + "'";
@@ -718,7 +717,8 @@ exports.friendsData = async (req, res) => {
             }
         }
 
-        res.status(200).json({ message: "Player Friends Are: ", friendsUsernames: usernames, friendsData: dataToSend })
+        newdata = usernames.toString();
+        res.status(200).json({ message: "Player Friends Are: ", friendsUsernames: newdata, friendsData: dataToSend })
 
     }
     catch (err) {
@@ -732,7 +732,7 @@ exports.getSentRequests = async (req, res) => {
     try {
         const playerId = req.query.id;
         let usernames = [];
-
+        let newdata = "";
         let sql = "Select * from friendrequests where playerid='" + playerId + "'";
         const result = await mysql2.query(sql);
         const reqs = ((result[0])[0].fr_sent);
@@ -746,8 +746,8 @@ exports.getSentRequests = async (req, res) => {
                 usernames.push(result[0][0].username)
             }
         }
-
-        res.status(200).json({ message: "Player Sent Requests Are: ", fr_sent: usernames })
+        newdata = usernames.toString();
+        res.status(200).json({ message: "Player Sent Requests Are: ", fr_sent: newdata })
 
     }
     catch (err) {
@@ -761,7 +761,7 @@ exports.getRecievedRequests = async (req, res) => {
     try {
         const playerId = req.query.id;
         let usernames = [];
-
+        let newdata = "";
         let sql = "Select * from friendrequests where playerid='" + playerId + "'";
         const result = await mysql2.query(sql);
         const reqs = ((result[0])[0].fr_recieved);
@@ -774,10 +774,54 @@ exports.getRecievedRequests = async (req, res) => {
                 usernames.push((result[0][0]).username);
             }
         }
-
-        res.status(200).json({ message: "Player Received Requests Are: ", fr_recieved: usernames })
+        newdata = usernames.toString();
+        res.status(200).json({ message: "Player Received Requests Are: ", fr_recieved: newdata })
     }
     catch (err) {
         res.status(500).json({ message: err.message })
+    }
+}
+
+exports.checkUser = async (req, res) => {
+    try {
+        let userName = req.body.username;
+        let sql = "Select * from player_details where username='" + userName + "'";
+        db.query(sql, (err, result) => {
+            if (err) return res.status(500).json({ message: err.message });
+            if (result.length > 0) {
+                //player found
+                return res.status(200).json({ message: "User Found" });
+            }
+            else {
+                return res.status(404).json({ message: "User Not Found" });
+            }
+        })
+    }
+    catch (err) {
+        res.status(500).json({ message: err.message });
+    }
+}
+
+exports.checkBan = async (req, res) => {
+    try {
+        let userName = req.body.username;
+        let sql = "Select * from player_details where username='" + userName + "'";
+        db.query(sql, (err, result) => {
+            if (err) return res.status(500).json({ message: err.message });
+            if (result.length > 0) {
+                if (result[0].status === 0) {
+                    return res.status(200).json({ message: "User is Banned" });
+                }
+                else if (result[0].status === 1) {
+                    return res.status(401).json({ message: "User isn't Banned" });
+                }
+            }
+            else {
+                return res.status(404).json({ message: "User Not Found" });
+            }
+        })
+    }
+    catch (err) {
+        res.status(500).json({ message: err.message });
     }
 }
